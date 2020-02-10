@@ -35,14 +35,9 @@ namespace Freelancer.Conrollers
         [HttpGet("{id}")]
         public async Task<ActionResult<Job>> GetJob(int id)
         {
-            var job = await _context.Jobs.FindAsync(id);
+            var data = await jobService.GetJobById(id);
 
-            if (job == null)
-            {
-                return NotFound();
-            }
-
-            return job;
+            return data == null ? NotFound() : new ActionResult<Job>(data);
         }
 
         [HttpGet("{id}/Requests")]

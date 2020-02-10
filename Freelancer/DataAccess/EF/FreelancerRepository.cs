@@ -26,7 +26,7 @@ namespace Freelancer.DataAccess.EF {
             throw new NotImplementedException();
         }
 
-        public Domain.Entities.Freelancer Get(int id) {
+        public Task<Domain.Entities.Freelancer> Get(int id) {
             throw new NotImplementedException();
         }
 

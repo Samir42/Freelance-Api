@@ -27,11 +27,6 @@ namespace Freelancer.DataAccess.EF {
         public Task<IEnumerable<Job>> FindAsync(Expression<Func<Job, bool>> predicate) {
             throw new NotImplementedException();
         }
-
-        public Job Get(int id) {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<Job>> GetAllAsync() {
             return await this.ctx.Jobs.Include(x => x.JobsSkills)
                                       .ThenInclude(a=> a.Skill)
@@ -52,6 +47,12 @@ namespace Freelancer.DataAccess.EF {
 
         public void Save() {
             throw new NotImplementedException();
+        }
+
+        public async Task<Job> Get(int id) {
+            return await this.ctx.Jobs.Include(x=> x.JobsSkills)
+                                      .ThenInclude(x=> x.Skill)
+                                      .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

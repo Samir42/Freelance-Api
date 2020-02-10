@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Freelancer.Services.JobService {
     public interface IJobService {
         Task<IEnumerable<Job>> GetAllAsync();
+        Task<Job> GetJobById(int id);
         Task<IEnumerable<Request>> GetRequestsAsync(int id);
     }
 }

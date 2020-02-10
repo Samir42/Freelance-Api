@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Freelancer.Domain.Abstractions {
     public interface IRepository<T> {
-        T Get(int id);
+        Task<T> Get(int id);
         void Add(T entity);
         Task<IEnumerable<T>> GetAllAsync();
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);

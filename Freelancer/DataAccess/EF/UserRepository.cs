@@ -42,7 +42,7 @@ namespace Freelancer.DataAccess.EF {
             throw new NotImplementedException();
         }
 
-        public User Get(int id) {
+        public Task<User> Get(int id) {
             throw new NotImplementedException();
         }
 
