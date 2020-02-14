@@ -42,8 +42,8 @@ namespace Freelancer.DataAccess.EF {
             throw new NotImplementedException();
         }
 
-        public Task<User> Get(int id) {
-            throw new NotImplementedException();
+        public Task<User> GetAsync(int id) {
+            return this.ctx.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
 

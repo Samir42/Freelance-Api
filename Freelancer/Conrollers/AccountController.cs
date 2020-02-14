@@ -5,44 +5,72 @@ using Microsoft.AspNetCore.Mvc;
 using Freelancer.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Freelancer.Services.UserService;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Options;
+using Freelancer.Domain.Models;
 
 namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
-    {
+    public class AccountController : ControllerBase {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
         private readonly IUserService userService;
+        private readonly ApplicationSettings appSettings;
 
         public AccountController(UserManager<User> userManager,
                                  SignInManager<User> signInManager,
-                                 IUserService userService) {
+                                 IUserService userService,
+                                 IOptions<ApplicationSettings> options) {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.userService = userService;
+            this.appSettings = options.Value;
         }
 
         // GET: api/Account
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        {
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers() {
             throw new NotImplementedException();
         }
 
         // GET: api/Account/email
         [Route("{email}")]
-        public async Task<ActionResult<User>> GetUser(string email)
-        {
-            return CreatedAtAction("GetUser", new { email = email}, new User());
+        public async Task<ActionResult<User>> GetUser(string email) {
+            return CreatedAtAction("GetUser", new { email = email }, new User());
+        }
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login(MyUser user) {
+            var res = await userManager.FindByNameAsync(user.Email);
+
+            if (user != null && await userManager.CheckPasswordAsync(res, user.Password)){
+                var tokenDescriptor = new SecurityTokenDescriptor() {
+                    Subject = new ClaimsIdentity(new Claim[] {
+
+                        new Claim("UserId", res.Id.ToString())
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(1),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JWT_Secret)), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                var token = tokenHandler.WriteToken(securityToken);
+                return Ok(new { token });
+            }
+            else
+                return BadRequest("Username or password is incorrect");
         }
 
         // PUT: api/Account/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
-        {
+        public async Task<IActionResult> PutUser(int id, User user) {
             return NoContent();
         }
 
@@ -50,20 +78,17 @@ namespace Freelancer.Conrollers {
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(MyUser user)
-        {
+        public async Task<ActionResult<User>> PostUser(MyUser user) {
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
         // DELETE: api/Account/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id)
-        {
+        public async Task<ActionResult<User>> DeleteUser(int id) {
             return null;
         }
 
-        private bool UserExists(int id)
-        {
+        private bool UserExists(int id) {
             return true;
         }
     }

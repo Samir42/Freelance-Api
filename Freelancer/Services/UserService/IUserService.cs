@@ -10,6 +10,7 @@ namespace Freelancer.Services.UserService {
         Task<IEnumerable<User>> GetUsersAsync();
         Task<IEnumerable<User>> GetFreelancersAsync();
         Task<IEnumerable<User>> GetClientsAsync();
+        Task<User> GetAsync(int id);
         User GetUserByEmail(string email);
         void SignUp(string email, string password);
     }

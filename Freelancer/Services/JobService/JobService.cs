@@ -16,7 +16,7 @@ namespace Freelancer.Services.JobService {
         }
 
         public async Task<Job> GetJobById(int id) {
-            return await jobRepository.Get(id);
+            return await jobRepository.GetAsync(id);
         }
 
         public async Task<IEnumerable<Request>> GetRequestsAsync(int id) {

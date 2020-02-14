@@ -38,13 +38,9 @@ namespace Freelancer.Conrollers {
         // GET: api/User/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id) {
-            var user = await _context.Users.FindAsync(id);
+            var user = await this.userService.GetAsync(id);
 
-            if (user == null) {
-                return NotFound();
-            }
-
-            return user;
+            return user == null ? NotFound() : new ActionResult<User>(user);
         }
 
         // PUT: api/User/5

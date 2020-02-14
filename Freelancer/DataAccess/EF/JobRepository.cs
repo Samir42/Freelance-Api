@@ -49,7 +49,7 @@ namespace Freelancer.DataAccess.EF {
             throw new NotImplementedException();
         }
 
-        public async Task<Job> Get(int id) {
+        public async Task<Job> GetAsync(int id) {
             return await this.ctx.Jobs.Include(x=> x.JobsSkills)
                                       .ThenInclude(x=> x.Skill)
                                       .FirstOrDefaultAsync(x => x.Id == id);

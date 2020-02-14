@@ -13,6 +13,10 @@ namespace Freelancer.Services.UserService {
             this.userRepository = userRepository;
         }
 
+        public async Task<User> GetAsync(int id) {
+            return await this.userRepository.GetAsync(id);
+        }
+
         public async Task<IEnumerable<User>> GetClientsAsync() {
             return await userRepository.GetClientsAsync();
         }
