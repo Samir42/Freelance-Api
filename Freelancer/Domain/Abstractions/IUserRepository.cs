@@ -10,7 +10,8 @@ namespace Freelancer.Domain.Abstractions {
     public interface IUserRepository : IRepository<User>, IDisposable{
         Task<IEnumerable<User>> GetFreelancersAsync();
         Task<IEnumerable<User>> GetClientsAsync();
-        void Add(UserViewModel vm);
+        Task<User> GetAsync(int id);
+        Task<User> Add(UserViewModel vm);
        
     }
 }

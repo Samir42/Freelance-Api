@@ -11,6 +11,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Options;
 using Freelancer.Domain.Models;
+using Freelancer.ViewModels;
 
 namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
@@ -54,7 +55,7 @@ namespace Freelancer.Conrollers {
 
                         new Claim("UserId", res.Id.ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddMinutes(1),
+                    Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JWT_Secret)), SecurityAlgorithms.HmacSha256Signature)
                 };
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -66,6 +67,12 @@ namespace Freelancer.Conrollers {
                 return BadRequest("Username or password is incorrect");
         }
 
+
+        [HttpPost]
+        [Route("signup")]
+        public async Task<User> SignUp(UserViewModel model) {
+            return await this.userService.SignUp(model);
+        }
         // PUT: api/Account/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.

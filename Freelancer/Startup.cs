@@ -70,9 +70,27 @@ namespace Freelancer {
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
-
                 };
             });
+
+            //services.AddAuthentication(x => {
+            //    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //})
+            //    .AddJwtBearer(x => {
+            //        x.RequireHttpsMetadata = false;
+            //        x.SaveToken = true;
+            //        x.TokenValidationParameters = new TokenValidationParameters {
+            //            ValidateIssuerSigningKey = true,
+            //            IssuerSigningKey = new SymmetricSecurityKey(key), // one = secret
+            //            ValidateIssuer = false,
+            //            ValidateAudience = false,
+
+            //            ValidateLifetime = true,
+            //            ClockSkew = TimeSpan.Zero
+            //        };
+            //    });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,7 +101,7 @@ namespace Freelancer {
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }

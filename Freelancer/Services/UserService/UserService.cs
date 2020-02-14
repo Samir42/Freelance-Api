@@ -36,5 +36,9 @@ namespace Freelancer.Services.UserService {
         public void SignUp(string email, string password) {
             userRepository.Add(new UserViewModel() { Email = email, Password = password });
         }
+
+        public async Task<User> SignUp(UserViewModel model) {
+            return await this.userRepository.Add(model);
+        }
     }
 }

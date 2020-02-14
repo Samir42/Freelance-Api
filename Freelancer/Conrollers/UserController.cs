@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Freelancer.DataAccess.EF;
 using Freelancer.Domain.Entities;
 using Freelancer.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
@@ -21,10 +22,10 @@ namespace Freelancer.Conrollers {
         }
 
         // GET: api/User
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers() {
-            return await userService.GetUsersAsync() as List<User>;
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<User>>> GetUsers() {
+        //    return await userService.GetUsersAsync() as List<User>;
+        //}
 
 
         [HttpGet("Freelancer")]
@@ -36,9 +37,14 @@ namespace Freelancer.Conrollers {
         }
 
         // GET: api/User/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id) {
-            var user = await this.userService.GetAsync(id);
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<User>> GetUser() {
+            string idd = User.Claims.First(x=> x.Type == "UserId").Value;
+
+            var res = int.Parse(idd);
+
+            var user = await this.userService.GetAsync(res);
 
             return user == null ? NotFound() : new ActionResult<User>(user);
         }

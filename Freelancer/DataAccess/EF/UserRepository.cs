@@ -1,6 +1,7 @@
 ﻿using Freelancer.Domain.Abstractions;
 using Freelancer.Domain.Entities;
 using Freelancer.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,19 +16,27 @@ namespace Freelancer.DataAccess.EF {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
 
-        public UserRepository(FreelanceDbContext ctx) => this.ctx = ctx;
+        public UserRepository(FreelanceDbContext ctx,
+                              UserManager<User> userManager,
+                              SignInManager<User> signInManager){
+            this.ctx = ctx;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+        }
+
 
         public void Add(User entity) {
             throw new NotImplementedException();
         }
 
-        public async void Add(UserViewModel vm) {
-            var user = new User { Email = vm.Email, UserName = vm.Email };
+        public async Task<User> Add(UserViewModel vm) {
+            var user = new User { Email = vm.Email, UserName = "samir1234" ,Address = "Baku",Name="BabatUser",Surname = "Babatov"};
             var result = await userManager.CreateAsync(user, vm.Password);
 
-            //if (result.Succeeded) {
-            await signInManager.SignInAsync(user, false);
-            //}
+            if (result.Succeeded) {
+                await signInManager.SignInAsync(user, false);
+            }
+            return await userManager.FindByNameAsync(user.Name);
         }
 
         public void Delete(int id) {
@@ -42,16 +51,11 @@ namespace Freelancer.DataAccess.EF {
             throw new NotImplementedException();
         }
 
-        public Task<User> GetAsync(int id) {
-            return this.ctx.Users.FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-
         public async Task<IEnumerable<User>> GetAllAsync() {
             var data = await ctx.Users.Include(x => x.Freelancer)
-                .ThenInclude(s=> s.SkillsUsers)
+                .ThenInclude(s => s.SkillsUsers)
                 .ThenInclude(sk => sk.Skill)
-                .Include(i=> i.Client)
+                .Include(i => i.Client)
                 .ToListAsync();
 
             return data;
@@ -75,7 +79,7 @@ namespace Freelancer.DataAccess.EF {
             var data = await ctx.Users.Include(x => x.Freelancer)
                 .ThenInclude(s => s.SkillsUsers)
                 .ThenInclude(sk => sk.Skill)
-                .Include(i=> i.Client)
+                .Include(i => i.Client)
                 .Where(x => x.Client != null)
                 .ToListAsync();
 
@@ -84,6 +88,10 @@ namespace Freelancer.DataAccess.EF {
 
         public void Dispose() {
             Console.WriteLine("User repository disposed");
+        }
+
+        public async Task<User> GetAsync(int id) {
+           return await this.ctx.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
