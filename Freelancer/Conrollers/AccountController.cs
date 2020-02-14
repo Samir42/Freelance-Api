@@ -47,13 +47,16 @@ namespace Freelancer.Conrollers {
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login(MyUser user) {
-            var res = await userManager.FindByNameAsync(user.Email);
+            //This means freelancer is null and i will check at other side that id null or not 
+            string freelancerIdzero = "0";
+            var res = await userService.GetUserByEmailAsync(user.Email);
 
             if (user != null && await userManager.CheckPasswordAsync(res, user.Password)){
                 var tokenDescriptor = new SecurityTokenDescriptor() {
                     Subject = new ClaimsIdentity(new Claim[] {
 
-                        new Claim("UserId", res.Id.ToString())
+                        new Claim("UserId", res.Id.ToString()),
+                        new Claim("FreelancerId",res.Freelancer == null ? freelancerIdzero : res.Freelancer.Id.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JWT_Secret)), SecurityAlgorithms.HmacSha256Signature)

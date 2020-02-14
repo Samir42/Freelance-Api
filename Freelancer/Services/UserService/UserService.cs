@@ -25,8 +25,8 @@ namespace Freelancer.Services.UserService {
             return await userRepository.GetFreelancersAsync();
         }
 
-        public User GetUserByEmail(string email) {
-            throw new NotImplementedException();
+        public async Task<User> GetUserByEmailAsync(string email) {
+            return await this.userRepository.GetUserByEmailAsync(email);
         }
 
         public Task<IEnumerable<User>> GetUsersAsync() {

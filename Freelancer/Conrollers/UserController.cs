@@ -40,9 +40,9 @@ namespace Freelancer.Conrollers {
         [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> GetUser() {
-            string idd = User.Claims.First(x=> x.Type == "UserId").Value;
+            string id = User.Claims.First(x=> x.Type == "UserId").Value;
 
-            var res = int.Parse(idd);
+            var res = int.Parse(id);
 
             var user = await this.userService.GetAsync(res);
 

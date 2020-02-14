@@ -13,7 +13,7 @@ namespace Freelancer.DataAccess.EF {
 
         public JobRepository(FreelanceDbContext ctx) => this.ctx = ctx;
 
-        public void Add(Job entity) {
+        public Task AddAsync(Job entity) {
             throw new NotImplementedException();
         }
 

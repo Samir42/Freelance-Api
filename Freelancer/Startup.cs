@@ -4,6 +4,7 @@ using Freelancer.Domain.Entities;
 using Freelancer.Domain.Models;
 using Freelancer.Services.FreelancerService;
 using Freelancer.Services.JobService;
+using Freelancer.Services.ProposalService;
 using Freelancer.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -31,7 +32,9 @@ namespace Freelancer {
                 .AddNewtonsoftJson(serv => serv.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();  
+            services.AddScoped<IProposalService, ProposalService>();
+            services.AddScoped<IProposalRepository, ProposalRepository>();
             services.AddScoped<IFreelancerService, FreelancerService>();
             services.AddScoped<IFreelancerRepository, FreelancerRepository>();
             services.AddScoped<IJobRepository, JobRepository>();

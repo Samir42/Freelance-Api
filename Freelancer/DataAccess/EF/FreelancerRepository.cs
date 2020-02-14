@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Freelancer.DataAccess.EF {
     public class FreelancerRepository : IFreelancerRepository {
-        public void Add(Domain.Entities.Freelancer entity) {
+        public Task AddAsync(Domain.Entities.Freelancer entity) {
             throw new NotImplementedException();
         }
 

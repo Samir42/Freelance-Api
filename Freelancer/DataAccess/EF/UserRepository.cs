@@ -25,7 +25,7 @@ namespace Freelancer.DataAccess.EF {
         }
 
 
-        public void Add(User entity) {
+        public Task AddAsync(User entity) {
             throw new NotImplementedException();
         }
 
@@ -86,12 +86,14 @@ namespace Freelancer.DataAccess.EF {
             return data;
         }
 
-        public void Dispose() {
-            Console.WriteLine("User repository disposed");
-        }
-
         public async Task<User> GetAsync(int id) {
            return await this.ctx.Users.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email) {
+            var user = await ctx.Users.Include(x=> x.Freelancer).FirstOrDefaultAsync(x => x.Email == email);
+
+            return user;
         }
     }
 }
