@@ -18,7 +18,7 @@ namespace Freelancer.DataAccess.EF {
 
         public UserRepository(FreelanceDbContext ctx,
                               UserManager<User> userManager,
-                              SignInManager<User> signInManager){
+                              SignInManager<User> signInManager) {
             this.ctx = ctx;
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -29,14 +29,13 @@ namespace Freelancer.DataAccess.EF {
             throw new NotImplementedException();
         }
 
-        public async Task<User> Add(UserViewModel vm) {
-            var user = new User { Email = vm.Email, UserName = "samir1234" ,Address = "Baku",Name="BabatUser",Surname = "Babatov"};
+        public async Task AddAsync(UserViewModel vm) {
+            var user = new User { Email = vm.Email, UserName = "samir123" };
             var result = await userManager.CreateAsync(user, vm.Password);
 
             if (result.Succeeded) {
                 await signInManager.SignInAsync(user, false);
             }
-            return await userManager.FindByNameAsync(user.Name);
         }
 
         public void Delete(int id) {
@@ -87,11 +86,11 @@ namespace Freelancer.DataAccess.EF {
         }
 
         public async Task<User> GetAsync(int id) {
-           return await this.ctx.Users.FirstOrDefaultAsync(x => x.Id == id);
+            return await this.ctx.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<User> GetUserByEmailAsync(string email) {
-            var user = await ctx.Users.Include(x=> x.Freelancer).FirstOrDefaultAsync(x => x.Email == email);
+            var user = await ctx.Users.Include(x => x.Freelancer).FirstOrDefaultAsync(x => x.Email == email);
 
             return user;
         }

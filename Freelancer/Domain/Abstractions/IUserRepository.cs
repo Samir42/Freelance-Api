@@ -11,7 +11,7 @@ namespace Freelancer.Domain.Abstractions {
         Task<IEnumerable<User>> GetFreelancersAsync();
         Task<IEnumerable<User>> GetClientsAsync();
         Task<User>  GetUserByEmailAsync(string email);
-        Task<User> Add(UserViewModel vm);
+        Task AddAsync(UserViewModel vm);
        
     }
 }

@@ -51,7 +51,7 @@ namespace Freelancer.Conrollers {
             string freelancerIdzero = "0";
             var res = await userService.GetUserByEmailAsync(user.Email);
 
-            if (user != null && await userManager.CheckPasswordAsync(res, user.Password)){
+            if (user != null && await userManager.CheckPasswordAsync(res, user.Password)) {
                 var tokenDescriptor = new SecurityTokenDescriptor() {
                     Subject = new ClaimsIdentity(new Claim[] {
 
@@ -73,8 +73,12 @@ namespace Freelancer.Conrollers {
 
         [HttpPost]
         [Route("signup")]
-        public async Task<User> SignUp(UserViewModel model) {
-            return await this.userService.SignUp(model);
+        public async Task<IActionResult> SignUp(UserViewModel model) {
+            try {
+                await this.userService.SignUpAsync(model);
+                return Ok();
+            }
+            catch { return BadRequest($"{model.Email} already confirmed. Try another one"); }
         }
         // PUT: api/Account/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
