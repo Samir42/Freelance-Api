@@ -17,15 +17,7 @@ namespace Freelancer.Conrollers {
         private readonly IUserService userService;
         private FreelanceDbContext _context;
 
-        public UserController(IUserService userService) {
-            this.userService = userService;
-        }
-
-        // GET: api/User
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<User>>> GetUsers() {
-        //    return await userService.GetUsersAsync() as List<User>;
-        //}
+        public UserController(IUserService userService) => this.userService = userService;
 
 
         [HttpGet("Freelancer")]

@@ -1,7 +1,6 @@
 ﻿using Freelancer.Domain.Abstractions;
 using Freelancer.Domain.Entities;
-using Freelancer.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+using Freelancer.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -29,13 +28,18 @@ namespace Freelancer.DataAccess.EF {
             throw new NotImplementedException();
         }
 
-        public async Task AddAsync(UserViewModel vm) {
-            var user = new User { Email = vm.Email, UserName = "samir123" };
+        public async Task<IdentityResult> AddAsync(UserViewModel vm) {
+            var user = new User { Email = vm.Email, UserName = vm.Email };
             var result = await userManager.CreateAsync(user, vm.Password);
 
             if (result.Succeeded) {
-                await signInManager.SignInAsync(user, false);
+                try {
+                    await signInManager.SignInAsync(user, false);
+
+                }
+                catch { throw; };
             }
+            return result;
         }
 
         public void Delete(int id) {

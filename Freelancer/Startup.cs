@@ -6,6 +6,7 @@ using Freelancer.Services.FreelancerService;
 using Freelancer.Services.JobService;
 using Freelancer.Services.ProposalService;
 using Freelancer.Services.SkillService;
+using Freelancer.Services.TokenService;
 using Freelancer.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -42,6 +43,7 @@ namespace Freelancer {
             services.AddScoped<IJobService, JobService>();
             services.AddScoped<ISkillRepository, SkillRepository>();
             services.AddScoped<ISkillService, SkillService>();
+            services.AddScoped<ITokenService, TokenService>();
 
             services
             .AddDbContext<FreelanceDbContext>(x => x.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=Freelancer;Trusted_Connection=True;"));

@@ -1,9 +1,7 @@
 ﻿using Freelancer.Domain.Entities;
-using Freelancer.ViewModels;
-using System;
+using Freelancer.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Freelancer.Domain.Abstractions {
@@ -11,7 +9,7 @@ namespace Freelancer.Domain.Abstractions {
         Task<IEnumerable<User>> GetFreelancersAsync();
         Task<IEnumerable<User>> GetClientsAsync();
         Task<User>  GetUserByEmailAsync(string email);
-        Task AddAsync(UserViewModel vm);
+        Task<IdentityResult> AddAsync(UserViewModel vm);
        
     }
 }

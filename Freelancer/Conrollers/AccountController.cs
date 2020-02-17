@@ -5,13 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Freelancer.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Freelancer.Services.UserService;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Options;
 using Freelancer.Domain.Models;
-using Freelancer.ViewModels;
+using Freelancer.Services.TokenService;
 
 namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
@@ -20,16 +16,19 @@ namespace Freelancer.Conrollers {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
         private readonly IUserService userService;
+        private readonly ITokenService tokenService;
         private readonly ApplicationSettings appSettings;
 
         public AccountController(UserManager<User> userManager,
                                  SignInManager<User> signInManager,
                                  IUserService userService,
+                                 ITokenService tokenService,
                                  IOptions<ApplicationSettings> options) {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.userService = userService;
             this.appSettings = options.Value;
+            this.tokenService = tokenService;
         }
 
         // GET: api/Account
@@ -46,39 +45,37 @@ namespace Freelancer.Conrollers {
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login(MyUser user) {
-            //This means freelancer is null and i will check at other side that id null or not 
-            string freelancerIdzero = "0";
-            var res = await userService.GetUserByEmailAsync(user.Email);
+        public async Task<IActionResult> Login(UserViewModel vm) {
+            var res = await userService.GetUserByEmailAsync(vm.Email);
 
-            if (user != null && await userManager.CheckPasswordAsync(res, user.Password)) {
-                var tokenDescriptor = new SecurityTokenDescriptor() {
-                    Subject = new ClaimsIdentity(new Claim[] {
+            var token = await this.tokenService.GenerateToken(res, appSettings.JWT_Secret, vm.Password);
 
-                        new Claim("UserId", res.Id.ToString()),
-                        new Claim("FreelancerId",res.Freelancer == null ? freelancerIdzero : res.Freelancer.Id.ToString())
-                    }),
-                    Expires = DateTime.UtcNow.AddDays(1),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.JWT_Secret)), SecurityAlgorithms.HmacSha256Signature)
-                };
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-                var token = tokenHandler.WriteToken(securityToken);
+            if (token != "")
                 return Ok(new { token });
-            }
-            else
-                return BadRequest("Username or password is incorrect");
+
+            return BadRequest("Username or password is incorrect");
         }
 
 
         [HttpPost]
         [Route("signup")]
         public async Task<IActionResult> SignUp(UserViewModel model) {
-            try {
-                await this.userService.SignUpAsync(model);
-                return Ok();
+            var result = await userService.SignUpAsync(model);
+
+            //Take user to get Token
+            if (result.Succeeded) {
+                var user = await userService.GetUserByEmailAsync(model.Email);
+
+
+                var token = await tokenService.GenerateToken(user, appSettings.JWT_Secret, model.Password);
+
+                if (token == "") return BadRequest();
+
+                return Ok(new { token });
             }
-            catch { return BadRequest($"{model.Email} already confirmed. Try another one"); }
+
+
+            return BadRequest(result.Errors);
         }
         // PUT: api/Account/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
@@ -92,7 +89,7 @@ namespace Freelancer.Conrollers {
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(MyUser user) {
+        public async Task<ActionResult<User>> PostUser(UserViewModel user) {
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 

@@ -1,14 +1,4 @@
-﻿using Freelancer.Domain.Abstractions;
-using Freelancer.Domain.Entities;
-using Freelancer.ViewModels;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-
-namespace Freelancer.DataAccess.EF {
+﻿namespace Freelancer.DataAccess.EF {
     //public class ClientRepository : IUserRepository {
     //    public void Add(UserViewModel vm) {
     //        throw new NotImplementedException();

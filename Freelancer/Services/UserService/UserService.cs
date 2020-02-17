@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Freelancer.Domain.Abstractions;
 using Freelancer.Domain.Entities;
-using Freelancer.ViewModels;
+using Freelancer.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Freelancer.Services.UserService {
     public class UserService : IUserService {
@@ -34,8 +35,8 @@ namespace Freelancer.Services.UserService {
         }
 
 
-        public async Task SignUpAsync(UserViewModel model) {
-            await this.userRepository.AddAsync(model);
+        public async Task<IdentityResult> SignUpAsync(UserViewModel model) {
+            return await this.userRepository.AddAsync(model);
         }
     }
 }
