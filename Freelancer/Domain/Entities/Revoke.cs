@@ -8,6 +8,6 @@ namespace Freelancer.Domain.Entities {
         public int Id { get; set; }
         public int RequestId { get; set; }
         public string Note { get; set; }
-        public Request Request { get; set; }
+        public virtual Request Request { get; set; }
     }
 }

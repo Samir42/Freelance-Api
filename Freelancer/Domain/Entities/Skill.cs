@@ -9,7 +9,7 @@ namespace Freelancer.Domain.Entities {
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
-        public IEnumerable<JobsSkill> JobsSkills { get; set; }
-        public IEnumerable<SkillsUser> SkillsUsers { get; set; }
+        public virtual IEnumerable<JobsSkill> JobsSkills { get; set; }
+        public virtual IEnumerable<SkillsUser> SkillsUsers { get; set; }
     }
 }

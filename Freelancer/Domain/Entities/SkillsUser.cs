@@ -8,7 +8,7 @@ namespace Freelancer.Domain.Entities {
         public int Id { get; set; }
         public int FreelancerId { get; set; }
         public int SkillId { get; set; }
-        public Freelancer Freelancer { get; set; }
-        public Skill Skill { get; set; }
+        public virtual Freelancer Freelancer { get; set; }
+        public virtual Skill Skill { get; set; }
     }
 }

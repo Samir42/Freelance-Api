@@ -9,7 +9,7 @@ namespace Freelancer.Domain.Entities {
         public int JobId { get; set; }
         public int SkillId { get; set; }
 
-        public Job Job { get; set; }
-        public Skill Skill { get; set; }
+        public virtual Job Job { get; set; }
+        public virtual Skill Skill { get; set; }
     }
 }

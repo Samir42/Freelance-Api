@@ -11,7 +11,7 @@ namespace Freelancer.Domain.Entities {
         public string RequestDescription { get; set; }
         public int HowManyDay { get; set; }
         public int Offer { get; set; }
-        public Freelancer Freelancer { get; set; }
-        public Job Job { get; set; }
+        public virtual Freelancer Freelancer { get; set; }
+        public virtual Job Job { get; set; }
     }
 }

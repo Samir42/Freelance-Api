@@ -16,10 +16,10 @@ namespace Freelancer.Domain.Entities {
         [Required]
         public int Price { get; set; }
         public DateTime OpenedAt { get; set; }
-        public Client Client { get; set; }
-        public Freelancer Freelancer { get; set; }
+        public virtual Client Client { get; set; }
+        public virtual Freelancer Freelancer { get; set; }
 
-        public IEnumerable<JobsSkill> JobsSkills { get; set; }
-        public IEnumerable<Request> Requests { get; set; }
+        public virtual IEnumerable<JobsSkill> JobsSkills { get; set; }
+        public virtual IEnumerable<Request> Requests { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace Freelancer.Domain.Entities {
         public string ImageUrl { get; set; }
         public DateTime RegisteredAt { get; set; }
 
-        public Freelancer Freelancer { get; set; }
-        public Client Client { get; set; }
+        public virtual Freelancer Freelancer { get; set; }
+        public virtual Client Client { get; set; }
     }
 }
