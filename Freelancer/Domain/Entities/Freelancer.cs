@@ -9,6 +9,6 @@ namespace Freelancer.Domain.Entities {
         public int PayHourly { get; set; }
         public int UserForeignKey { get; set; }
         public virtual User User { get; set; }
-        public virtual IEnumerable<SkillsUser> SkillsUsers { get; set; }
+        public virtual IEnumerable<SkillUser> SkillUsers { get; set; }
     }
 }

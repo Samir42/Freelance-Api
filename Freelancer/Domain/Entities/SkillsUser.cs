@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Freelancer.Domain.Entities {
-    public class SkillsUser {
+    public class SkillUser {
         public int Id { get; set; }
         public int FreelancerId { get; set; }
         public int SkillId { get; set; } 

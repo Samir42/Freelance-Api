@@ -14,6 +14,7 @@ using Freelancer.Services.FreelancerService;
 using Freelancer.Services.TokenService;
 using Freelancer.Services.UserService;
 using Microsoft.Extensions.Options;
+using Freelancer.Services.ClientService;
 
 namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
@@ -25,13 +26,15 @@ namespace Freelancer.Conrollers {
         private readonly IFreelancerService freelancerService;
         private readonly IUserService userService;
         private readonly ITokenService tokenService;
+        private readonly IClientService clientService;
 
-        public FreelancersController(ISkillService skillService, IFreelancerService freelancerService, ITokenService tokenService, IUserService userService, IOptions<ApplicationSettings> options) {
+        public FreelancersController(ISkillService skillService, IFreelancerService freelancerService, ITokenService tokenService,IClientService clientService, IUserService userService, IOptions<ApplicationSettings> options) {
             this.skillService = skillService;
             this.freelancerService = freelancerService;
             this.tokenService = tokenService;
             this.userService = userService;
             this.appSettings = options.Value;
+            this.clientService = clientService;
         }
 
         // GET: api/Freelancers
@@ -90,15 +93,16 @@ namespace Freelancer.Conrollers {
 
             vm.UserId = id;
 
-            await freelancerService.AddAsync(new Domain.Entities.Freelancer() { UserForeignKey = id, PayHourly = vm.PayHourly });
+            var freelancer = new Domain.Entities.Freelancer() { UserForeignKey = id, PayHourly = vm.PayHourly };
+            await freelancerService.AddAsync(freelancer);
+            await clientService.AddAsync(vm.CompanyName, id);
 
             var user = await userService.GetAsync(id);
 
             var token = await tokenService.GenerateToken(user, appSettings.JWT_Secret, vm.Password);
 
-            //Update freelancerId and skillId of Skills 
-            var skillsUsers = vm.SkillsUsers.Select(c => { c.FreelancerId = user.Freelancer.Id; c.SkillId = c.Skill.Id; return c; }).ToList();
-
+            //Update freelancerId and skillId of Skills
+            var skillsUsers = vm.SkillUsers.Select(c => new SkillUser { FreelancerId = user.Freelancer.Id, SkillId = c.Skill.Id }).ToList();
             await skillService.AddRangeAsync(skillsUsers);
 
             if (token == "") return BadRequest();

@@ -10,6 +10,7 @@ namespace Freelancer.Domain.Models {
         public int PayHourly { get; set; }
         public int UserId { get; set; }
         public string Password { get; set; }
-        public IEnumerable<SkillsUser> SkillsUsers { get; set; }
+        public string CompanyName { get; set; }
+        public IEnumerable<SkillUser> SkillUsers { get; set; }
     }
 }

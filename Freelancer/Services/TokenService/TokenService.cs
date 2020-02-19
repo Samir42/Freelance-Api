@@ -18,13 +18,15 @@ namespace Freelancer.Services.TokenService {
 
 
         public async Task<string> GenerateToken(User user, string JWT_secret,string password) {
-            string freelancerIzero = "0";
+            string freelancerIdzero = "0";
+            string clientIdzero = "0";
             if (user != null && await userManager.CheckPasswordAsync(user, password)) {
                 var tokenDescriptor = new SecurityTokenDescriptor() {
                     Subject = new ClaimsIdentity(new Claim[] {
 
                         new Claim("UserId", user.Id.ToString()),
-                        new Claim("FreelancerId",user.Freelancer == null ? freelancerIzero : user.Freelancer.Id.ToString())
+                        new Claim("FreelancerId",user.Freelancer == null ? freelancerIdzero : user.Freelancer.Id.ToString()),
+                        new Claim("ClientId",user.Client == null ? clientIdzero : user.Client.Id.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secret)), SecurityAlgorithms.HmacSha256Signature)

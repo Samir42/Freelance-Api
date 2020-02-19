@@ -48,11 +48,23 @@ namespace Freelancer.DataAccess.EF {
         public void Save() {
             throw new NotImplementedException();
         }
+        public async Task<IEnumerable<Job>> GetAllAsync(int clientId) {
+            return await this.ctx.Jobs.Include(x => x.JobsSkills)
+                                     .ThenInclude(a => a.Skill)
+                                     .Include(x => x.Client)
+                                     .Include(x => x.Requests)
+                                     .ThenInclude(x => x.Freelancer)
+                                     .ThenInclude(x => x.User)
+                                     .Where(x=> x.ClientId == clientId)
+                                     .ToListAsync();
+        }
 
         public async Task<Job> GetAsync(int id) {
             return await this.ctx.Jobs.Include(x=> x.JobsSkills)
                                       .ThenInclude(x=> x.Skill)
                                       .FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        
     }
 }

@@ -22,7 +22,7 @@ namespace Freelancer.DataAccess.EF {
         public DbSet<Request> Requests { get; set; }
         public DbSet<Revoke> Revokes { get; set; }
         public DbSet<Skill> Skills { get; set; }
-        public DbSet<SkillsUser> SkillsUsers { get; set; }
+        public DbSet<SkillUser> SkillUsers { get; set; }
 
         public FreelanceDbContext(DbContextOptions<FreelanceDbContext> options)
            : base(options) {
@@ -87,7 +87,6 @@ namespace Freelancer.DataAccess.EF {
             //    .HasOne(h => h.Job)
             //    .WithMany(w => w.AppliedJobs)
             //    .OnDelete(DeleteBehavior.Restrict);
-
             base.OnModelCreating(builder);
         }
     }

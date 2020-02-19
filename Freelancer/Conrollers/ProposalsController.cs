@@ -31,45 +31,35 @@ namespace Freelancer.Conrollers {
             //return data == null ? BadRequest($"No Proposal found for {id}") : Ok(data);
         }
 
-        // GET: api/Proposals/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+       
 
         // POST: api/Proposals
         [Authorize]
         [HttpPost]
-        public IActionResult Post(ProposalViewModel model) {
-            //Take freelancerId if it does not exist within model. 
-            if (model.FreelancerId == 0) {
+        public async Task<IActionResult> PostAsync(ProposalViewModel model) {
+            string res = User.Claims.First(x => x.Type == "FreelancerId").Value;
 
-                //Find freelancer 
-                var id = User.Claims.First(x => x.Type == "FreelancerId").Value;
+            int freelancerId = int.Parse(res);
 
-                //If does not exists Register the User
+            model.FreelancerId = freelancerId;
 
-                //try {
-                //    freelancerId = int.Parse(id);
-                //    model.FreelancerId = freelancerId;
-                //}
-                //finally { }
-            }
+            await proposalService.AddAsync(model);
 
-            proposalService.AddAsync(model);
-
-            return CreatedAtAction("Post", new { id = model.JobId }, model);
+            return Ok();
         }
 
-        // PUT: api/Proposals/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value) {
-        }
+        [Authorize]
+        [HttpGet("{jobId}/exists")]
+        public async Task<bool> Exists(int jobId) {
+            string res = User.Claims.First(x => x.Type == "FreelancerId").Value;
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id) {
+            int freelancerId = int.Parse(res);
+
+            var data = await this.proposalService.GetProposalsByJobIdAsync(jobId);
+
+            var exists = data.FirstOrDefault(x => x.FreelancerId == freelancerId) != null;
+
+            return exists;
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Freelancer.Domain.Entities {
+﻿namespace Freelancer.Domain.Entities {
     public class Request {
         public int Id { get; set; }
         public int JobId { get; set; }

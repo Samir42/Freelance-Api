@@ -9,21 +9,27 @@ using Freelancer.DataAccess.EF;
 using Freelancer.Domain.Entities;
 using Freelancer.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
+using Freelancer.Services.JobService;
 
 namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase {
         private readonly IUserService userService;
+        private readonly IJobService jobService;
         private FreelanceDbContext _context;
 
-        public UserController(IUserService userService) => this.userService = userService;
+        public UserController(IUserService userService, IJobService jobService) {
+            this.userService = userService;
+            this.jobService = this.jobService = jobService;
+        }
 
 
         [HttpGet("Freelancer")]
         public async Task<ActionResult<IEnumerable<User>>> GetFreelancers() {
             return await userService.GetFreelancersAsync() as List<User>;
-        }[HttpGet("Client")]
+        }
+        [HttpGet("Client")]
         public async Task<ActionResult<IEnumerable<User>>> GetClients() {
             return await userService.GetClientsAsync() as List<User>;
         }
@@ -32,13 +38,27 @@ namespace Freelancer.Conrollers {
         [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> GetUser() {
-            string id = User.Claims.First(x=> x.Type == "UserId").Value;
+            string id = User.Claims.First(x => x.Type == "UserId").Value;
 
             var res = int.Parse(id);
 
             var user = await this.userService.GetAsync(res);
 
             return user == null ? NotFound() : new ActionResult<User>(user);
+        }
+
+        [Authorize]
+        [HttpGet("jobs")]
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobs() {
+            string res = User.Claims.First(x => x.Type == "ClientId").Value;
+
+            int clientId = int.Parse(res);
+
+            var jobs = await this.jobService.GetAllAsync(clientId);
+
+            if (jobs == null) return NotFound();
+
+            return Ok(jobs);
         }
 
         // PUT: api/User/5

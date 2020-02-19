@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Freelancer.DataAccess.EF;
 using Freelancer.Domain.Entities;
 using Freelancer.Services.JobService;
+using Microsoft.AspNetCore.Authorization;
+using Freelancer.Domain.Models;
 
 namespace Freelancer.Conrollers
 {

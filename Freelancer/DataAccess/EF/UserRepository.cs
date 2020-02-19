@@ -29,7 +29,7 @@ namespace Freelancer.DataAccess.EF {
         }
 
         public async Task<IdentityResult> AddAsync(UserViewModel vm) {
-            var user = new User { Email = vm.Email, UserName = vm.Email };
+            var user = new User { Email = vm.Email, UserName = vm.Email , Name = vm.Name,Surname = vm.Surname};
             var result = await userManager.CreateAsync(user, vm.Password);
 
             if (result.Succeeded) {
@@ -56,7 +56,7 @@ namespace Freelancer.DataAccess.EF {
 
         public async Task<IEnumerable<User>> GetAllAsync() {
             var data = await ctx.Users.Include(x => x.Freelancer)
-                .ThenInclude(s => s.SkillsUsers)
+                .ThenInclude(s => s.SkillUsers)
                 .ThenInclude(sk => sk.Skill)
                 .Include(i => i.Client)
                 .ToListAsync();
@@ -70,7 +70,7 @@ namespace Freelancer.DataAccess.EF {
 
         public async Task<IEnumerable<User>> GetFreelancersAsync() {
             var data = await ctx.Users.Include(x => x.Freelancer)
-                .ThenInclude(s => s.SkillsUsers)
+                .ThenInclude(s => s.SkillUsers)
                 .ThenInclude(sk => sk.Skill)
                 .Where(x => x.Freelancer != null)
                 .ToListAsync();
@@ -80,7 +80,7 @@ namespace Freelancer.DataAccess.EF {
 
         public async Task<IEnumerable<User>> GetClientsAsync() {
             var data = await ctx.Users.Include(x => x.Freelancer)
-                .ThenInclude(s => s.SkillsUsers)
+                .ThenInclude(s => s.SkillUsers)
                 .ThenInclude(sk => sk.Skill)
                 .Include(i => i.Client)
                 .Where(x => x.Client != null)
@@ -90,7 +90,7 @@ namespace Freelancer.DataAccess.EF {
         }
 
         public async Task<User> GetAsync(int id) {
-            return await this.ctx.Users.Include(x=> x.Freelancer).FirstOrDefaultAsync(x => x.Id == id);
+            return await this.ctx.Users.Include(x=> x.Freelancer).Include(x=> x.Client).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<User> GetUserByEmailAsync(string email) {

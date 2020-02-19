@@ -2,6 +2,7 @@ using Freelancer.DataAccess.EF;
 using Freelancer.Domain.Abstractions;
 using Freelancer.Domain.Entities;
 using Freelancer.Domain.Models;
+using Freelancer.Services.ClientService;
 using Freelancer.Services.FreelancerService;
 using Freelancer.Services.JobService;
 using Freelancer.Services.ProposalService;
@@ -43,6 +44,8 @@ namespace Freelancer {
             services.AddScoped<IJobService, JobService>();
             services.AddScoped<ISkillRepository, SkillRepository>();
             services.AddScoped<ISkillService, SkillService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<ITokenService, TokenService>();
 
             services
