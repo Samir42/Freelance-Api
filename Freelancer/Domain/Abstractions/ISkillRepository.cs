@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace Freelancer.Domain.Abstractions {
     public interface ISkillRepository : IRepository<Skill>{
-        Task AddRangeAsync(IEnumerable<Skill> skills);
+        Task AddRangeAsync(IEnumerable<SkillsUser> skillsUsers);
     }
 }

@@ -9,18 +9,29 @@ using Freelancer.DataAccess.EF;
 using Freelancer.Domain.Entities;
 using Freelancer.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Freelancer.Services.SkillService;
+using Freelancer.Services.FreelancerService;
+using Freelancer.Services.TokenService;
+using Freelancer.Services.UserService;
+using Microsoft.Extensions.Options;
 
-namespace Freelancer.Conrollers
-{
+namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
     [ApiController]
-    public class FreelancersController : ControllerBase
-    {
+    public class FreelancersController : ControllerBase {
         private readonly FreelanceDbContext _context;
+        private readonly ApplicationSettings appSettings;
+        private readonly ISkillService skillService;
+        private readonly IFreelancerService freelancerService;
+        private readonly IUserService userService;
+        private readonly ITokenService tokenService;
 
-        public FreelancersController(FreelanceDbContext context)
-        {
-            _context = context;
+        public FreelancersController(ISkillService skillService, IFreelancerService freelancerService, ITokenService tokenService, IUserService userService, IOptions<ApplicationSettings> options) {
+            this.skillService = skillService;
+            this.freelancerService = freelancerService;
+            this.tokenService = tokenService;
+            this.userService = userService;
+            this.appSettings = options.Value;
         }
 
         // GET: api/Freelancers
@@ -31,12 +42,10 @@ namespace Freelancer.Conrollers
 
         // GET: api/Freelancers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Domain.Entities.Freelancer>> GetFreelancer(int id)
-        {
+        public async Task<ActionResult<Domain.Entities.Freelancer>> GetFreelancer(int id) {
             var freelancer = await _context.Freelancers.FindAsync(id);
 
-            if (freelancer == null)
-            {
+            if (freelancer == null) {
                 return NotFound();
             }
 
@@ -47,27 +56,21 @@ namespace Freelancer.Conrollers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFreelancer(int id, Domain.Entities.Freelancer freelancer)
-        {
-            if (id != freelancer.Id)
-            {
+        public async Task<IActionResult> PutFreelancer(int id, Domain.Entities.Freelancer freelancer) {
+            if (id != freelancer.Id) {
                 return BadRequest();
             }
 
             _context.Entry(freelancer).State = EntityState.Modified;
 
-            try
-            {
+            try {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FreelancerExists(id))
-                {
+            catch (DbUpdateConcurrencyException) {
+                if (!FreelancerExists(id)) {
                     return NotFound();
                 }
-                else
-                {
+                else {
                     throw;
                 }
             }
@@ -78,20 +81,37 @@ namespace Freelancer.Conrollers
         // POST: api/Freelancers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        //[Authorize]
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult> PostFreelancer(FreelancerViewModel vm)
-        {
-            return null;
+        public async Task<ActionResult> PostFreelancer(FreelancerViewModel vm) {
+            string res = User.Claims.First(x => x.Type == "UserId").Value;
+
+            int id = int.Parse(res);
+
+            vm.UserId = id;
+
+            await freelancerService.AddAsync(new Domain.Entities.Freelancer() { UserForeignKey = id, PayHourly = vm.PayHourly });
+
+            var user = await userService.GetAsync(id);
+
+            var token = await tokenService.GenerateToken(user, appSettings.JWT_Secret, vm.Password);
+
+            //Update freelancerId and skillId of Skills 
+            var skillsUsers = vm.SkillsUsers.Select(c => { c.FreelancerId = user.Freelancer.Id; c.SkillId = c.Skill.Id; return c; }).ToList();
+
+            await skillService.AddRangeAsync(skillsUsers);
+
+            if (token == "") return BadRequest();
+
+
+            return Ok(new { token });
         }
 
         // DELETE: api/Freelancers/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Domain.Entities.Freelancer>> DeleteFreelancer(int id)
-        {
+        public async Task<ActionResult<Domain.Entities.Freelancer>> DeleteFreelancer(int id) {
             var freelancer = await _context.Freelancers.FindAsync(id);
-            if (freelancer == null)
-            {
+            if (freelancer == null) {
                 return NotFound();
             }
 
@@ -101,8 +121,7 @@ namespace Freelancer.Conrollers
             return freelancer;
         }
 
-        private bool FreelancerExists(int id)
-        {
+        private bool FreelancerExists(int id) {
             return _context.Freelancers.Any(e => e.Id == id);
         }
     }

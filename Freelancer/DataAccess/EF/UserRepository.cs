@@ -90,7 +90,7 @@ namespace Freelancer.DataAccess.EF {
         }
 
         public async Task<User> GetAsync(int id) {
-            return await this.ctx.Users.FirstOrDefaultAsync(x => x.Id == id);
+            return await this.ctx.Users.Include(x=> x.Freelancer).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<User> GetUserByEmailAsync(string email) {

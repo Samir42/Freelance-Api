@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 namespace Freelancer.Services.SkillService {
     public interface ISkillService {
         Task<IEnumerable<Skill>> GetSkillsAsync();
-        Task AddRangeAsync(IEnumerable<Skill> skills);
+        Task AddRangeAsync(IEnumerable<SkillsUser> skillsUsers);
     }
 }

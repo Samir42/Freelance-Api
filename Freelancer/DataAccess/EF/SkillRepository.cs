@@ -16,9 +16,16 @@ namespace Freelancer.DataAccess.EF {
             throw new NotImplementedException();
         }
 
-        public async Task AddRangeAsync(IEnumerable<Skill> skills) {
-            await this.ctx.Skills.AddRangeAsync(skills);
-            await this.ctx.SaveChangesAsync();
+        public async Task AddRangeAsync(IEnumerable<SkillsUser> skillsUsers) {
+            try {
+                await this.ctx.SkillsUsers.AddRangeAsync(skillsUsers);
+            }
+            catch (Exception ex) { throw ex; }
+            try {
+                await this.ctx.SaveChangesAsync();
+
+            }
+            catch (Exception ex) { throw ex; }
         }
 
         public void Delete(int id) {

@@ -9,8 +9,8 @@ namespace Freelancer.Services.SkillService {
     public class SkillService : ISkillService {
         private readonly ISkillRepository skillRepository;
         public SkillService(ISkillRepository skillRepository) => this.skillRepository = skillRepository;
-        public async Task AddRangeAsync(IEnumerable<Skill> skills) {
-            await this.skillRepository.AddRangeAsync(skills);
+        public async Task AddRangeAsync(IEnumerable<SkillsUser> skillsUsers) {
+            await this.skillRepository.AddRangeAsync(skillsUsers);
         }
 
         public async Task<IEnumerable<Skill>> GetSkillsAsync() {

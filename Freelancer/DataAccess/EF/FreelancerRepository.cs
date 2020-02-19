@@ -1,6 +1,8 @@
 ﻿using Freelancer.Domain.Abstractions;
 using Freelancer.Domain.Entities;
+using Freelancer.Domain.Models;
 using Freelancer.Services.UserService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +12,15 @@ using System.Threading.Tasks;
 
 namespace Freelancer.DataAccess.EF {
     public class FreelancerRepository : IFreelancerRepository {
-        public Task AddAsync(Domain.Entities.Freelancer entity) {
+        private FreelanceDbContext ctx;
+
+        public FreelancerRepository(FreelanceDbContext ctx) => this.ctx = ctx;
+        public async Task AddAsync(Domain.Entities.Freelancer entity) {
+            await ctx.Freelancers.AddAsync(entity);
+            await ctx.SaveChangesAsync();
+        }
+
+        public Task AddAsync(FreelancerViewModel vm) {
             throw new NotImplementedException();
         }
 
@@ -37,5 +47,7 @@ namespace Freelancer.DataAccess.EF {
         public void Save() {
             throw new NotImplementedException();
         }
+
+       
     }
 }
