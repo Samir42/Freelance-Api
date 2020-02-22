@@ -15,7 +15,7 @@ namespace Freelancer.Services.ProposalService {
         }
 
         public async Task AddAsync(ProposalViewModel model) {
-           await this.proposalRepository.AddAsync(new Request() {
+            await this.proposalRepository.AddAsync(new Request() {
                 JobId = model.JobId,
                 FreelancerId = model.FreelancerId,
                 RequestDescription = model.RequestDescription,
@@ -24,8 +24,13 @@ namespace Freelancer.Services.ProposalService {
             });
         }
 
+        public async Task<IEnumerable<Request>> GetProposalsByFreelancerIdAsync(int freelancerId) {
+            return await this.proposalRepository.GetProposalsByFreelancerIdAsync(freelancerId);
+        }
+
         public async Task<IEnumerable<Request>> GetProposalsByJobIdAsync(int jobId) {
             return await this.proposalRepository.GetProposalsByJobIdAsync(jobId);
         }
+
     }
 }

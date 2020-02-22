@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Freelancer.Services.ProposalService {
     public interface IProposalService {
         Task<IEnumerable<Request>> GetProposalsByJobIdAsync(int jobId);
+        Task<IEnumerable<Request>> GetProposalsByFreelancerIdAsync(int freelancerId);
         Task AddAsync(ProposalViewModel model);
     }
 }

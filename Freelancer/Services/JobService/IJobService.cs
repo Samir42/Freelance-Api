@@ -1,4 +1,5 @@
 ﻿using Freelancer.Domain.Entities;
+using Freelancer.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,9 @@ namespace Freelancer.Services.JobService {
         Task<IEnumerable<Job>> GetAllAsync(int clientId);
         Task<Job> GetJobById(int id);
         Task<IEnumerable<Request>> GetRequestsAsync(int id);
+        Task<int> PostJobAsync(JobViewModel vm);
+        Task UpdateJobAsync(JobViewModel vm);
+
+        Task<IEnumerable<Job>> GetDoneProjectsByFreelancerIdAsync(int freelancerId);
     }
 }

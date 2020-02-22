@@ -10,6 +10,7 @@ using Freelancer.Domain.Entities;
 using Freelancer.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Freelancer.Services.JobService;
+using Freelancer.Services.ProposalService;
 
 namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
@@ -17,11 +18,14 @@ namespace Freelancer.Conrollers {
     public class UserController : ControllerBase {
         private readonly IUserService userService;
         private readonly IJobService jobService;
+        private readonly IProposalService proposalService;
+
         private FreelanceDbContext _context;
 
-        public UserController(IUserService userService, IJobService jobService) {
+        public UserController(IUserService userService, IJobService jobService, IProposalService proposalService) {
             this.userService = userService;
             this.jobService = this.jobService = jobService;
+            this.proposalService = proposalService;
         }
 
 
@@ -34,7 +38,6 @@ namespace Freelancer.Conrollers {
             return await userService.GetClientsAsync() as List<User>;
         }
 
-        // GET: api/User/5
         [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> GetUser() {
@@ -61,59 +64,18 @@ namespace Freelancer.Conrollers {
             return Ok(jobs);
         }
 
-        // PUT: api/User/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user) {
-            if (id != user.Id) {
-                return BadRequest();
-            }
+        [Authorize]
+        [HttpGet("proposals")]
+        public async Task<ActionResult<IEnumerable<Request>>> GetProposals() {
+            string res = User.Claims.First(x => x.Type == "FreelancerId").Value;
 
-            _context.Entry(user).State = EntityState.Modified;
+            int freelancerId = int.Parse(res);
 
-            try {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException) {
-                if (!UserExists(id)) {
-                    return NotFound();
-                }
-                else {
-                    throw;
-                }
-            }
+            var proposals = await proposalService.GetProposalsByFreelancerIdAsync(freelancerId);
 
-            return NoContent();
-        }
+            if (proposalService == null) return NotFound("No proposals found");
 
-        // POST: api/User
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user) {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        }
-
-        // DELETE: api/User/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id) {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return user;
-        }
-
-        private bool UserExists(int id) {
-            return _context.Users.Any(e => e.Id == id);
+            return Ok(proposals);
         }
     }
 }

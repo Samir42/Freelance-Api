@@ -30,13 +30,6 @@ namespace Freelancer.Conrollers {
             this.appSettings = options.Value;
             this.tokenService = tokenService;
         }
-
-        // GET: api/Account
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers() {
-            throw new NotImplementedException();
-        }
-
         // GET: api/Account/email
         [Route("{email}")]
         public async Task<ActionResult<User>> GetUser(string email) {
@@ -76,31 +69,6 @@ namespace Freelancer.Conrollers {
 
 
             return BadRequest(result.Errors);
-        }
-        // PUT: api/Account/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user) {
-            return NoContent();
-        }
-
-        // POST: api/Account
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(UserViewModel user) {
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        }
-
-        // DELETE: api/Account/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id) {
-            return null;
-        }
-
-        private bool UserExists(int id) {
-            return true;
         }
     }
 }

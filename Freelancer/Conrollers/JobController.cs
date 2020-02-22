@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Freelancer.DataAccess.EF;
@@ -10,20 +8,20 @@ using Freelancer.Domain.Entities;
 using Freelancer.Services.JobService;
 using Microsoft.AspNetCore.Authorization;
 using Freelancer.Domain.Models;
+using Freelancer.Services.SkillService;
 
-namespace Freelancer.Conrollers
-{
+namespace Freelancer.Conrollers {
     [Route("api/[controller]")]
     [ApiController]
     public class JobController : ControllerBase
     {
         private readonly IJobService jobService;
-        private readonly FreelanceDbContext _context;
+        private readonly ISkillService skillService;
 
-        public JobController(FreelanceDbContext context , IJobService jobService)
+        public JobController(FreelanceDbContext context , IJobService jobService,ISkillService skillService)
         {
             this.jobService = jobService;
-            _context = context;
+            this.skillService = skillService;
         }
 
         // GET: api/Job
@@ -48,69 +46,50 @@ namespace Freelancer.Conrollers
             return await jobService.GetRequestsAsync(id) as List<Request>;
         }
 
-        // PUT: api/Job/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutJob(int id, Job job)
-        {
-            if (id != job.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(job).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!JobExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
+        
         // POST: api/Job
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Job>> PostJob(Job job)
+        public async Task<ActionResult<Job>> PostJob(JobViewModel vm)
         {
-            _context.Jobs.Add(job);
-            await _context.SaveChangesAsync();
+            var cid = User.Claims.First(x => x.Type == "ClientId").Value;
 
-            return CreatedAtAction("GetJob", new { id = job.Id }, job);
+            vm.ClientId = int.Parse(cid);
+
+            var jobId = await this.jobService.PostJobAsync(vm);
+
+            var jobsSkills = vm.JobsSkills.Select(c => new JobsSkill() { JobId = jobId, SkillId = c.Skill.Id }).ToList();
+
+            await this.skillService.AddRangeAsync(jobsSkills);
+
+            return Ok();
         }
 
-        // DELETE: api/Job/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Job>> DeleteJob(int id)
-        {
-            var job = await _context.Jobs.FindAsync(id);
-            if (job == null)
-            {
-                return NotFound();
-            }
+        [Authorize]
+        [HttpGet("done")]
+        public async Task<ActionResult<IEnumerable<Job>>> GetDoneProjects() {
+            string id = User.Claims.First(x => x.Type == "FreelancerId").Value;
 
-            _context.Jobs.Remove(job);
-            await _context.SaveChangesAsync();
+            int freelancerId = int.Parse(id);
 
-            return job;
+            var doneProjects = await jobService.GetDoneProjectsByFreelancerIdAsync(freelancerId);
+
+            if (doneProjects == null) return NotFound("No done project found");
+
+            return Ok(doneProjects);
+        }
+       
+        // I know it's not good approaching but i will corrected my wrongs. It's my first api
+
+        [Authorize]
+        [HttpPost("update")]
+        public async Task<ActionResult> UpdateJobAsync(JobViewModel vm) {
+            await this.jobService.UpdateJobAsync(vm);
+
+            return Ok();
         }
 
-        private bool JobExists(int id)
-        {
-            return _context.Jobs.Any(e => e.Id == id);
-        }
     }
 }
