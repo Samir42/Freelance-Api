@@ -94,7 +94,7 @@ namespace Freelancer.DataAccess.EF {
         }
 
         public async Task<User> GetUserByEmailAsync(string email) {
-            var user = await ctx.Users.Include(x => x.Freelancer).FirstOrDefaultAsync(x => x.Email == email);
+            var user = await ctx.Users.Include(x => x.Freelancer).Include(x=> x.Client).FirstOrDefaultAsync(x => x.Email == email);
 
             return user;
         }
